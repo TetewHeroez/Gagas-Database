@@ -1,0 +1,35 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* === FIX UNTUK BROWSER AUTOFILL === */
+/* Mengubah warna latar belakang autofill untuk mode terang */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: #111827; /* Warna teks (mirip text-gray-900) */
+  box-shadow: 0 0 0px 1000px #f3f4f6 inset; /* Warna latar (mirip bg-gray-100) */
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Mengubah warna latar belakang autofill untuk mode gelap */
+:where(.dark) input:-webkit-autofill,
+:where(.dark) input:-webkit-autofill:hover,
+:where(.dark) input:-webkit-autofill:focus,
+:where(.dark) input:-webkit-autofill:active {
+  -webkit-text-fill-color: #f9fafb; /* Warna teks (mirip text-gray-50) */
+  box-shadow: 0 0 0px 1000px #374151 inset; /* Warna latar (mirip bg-gray-700) */
+}
+
+.dark input[type="date"] {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}

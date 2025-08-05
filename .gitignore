@@ -1,0 +1,19 @@
+# Abaikan semua folder node_modules di seluruh proyek
+**/node_modules
+
+# Abaikan semua file .env di seluruh proyek
+# File ini berisi informasi rahasia dan tidak boleh di-upload
+**/.env
+
+# Abaikan folder build/dist dari frontend
+frontend/dist
+frontend/.vite
+
+# Abaikan file log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Abaikan folder cache editor
+.vscode/
+.idea/

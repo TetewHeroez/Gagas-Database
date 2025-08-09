@@ -18,6 +18,7 @@ function LoginPage({ onLogin }) {
       const response = await api.post("/api/auth/login", { email, password });
       onLogin(response.data);
     } catch (err) {
+      console.error("Login error:", err);
       const errorMessage = err.response?.data?.message || "Login gagal.";
       setError(errorMessage);
     } finally {

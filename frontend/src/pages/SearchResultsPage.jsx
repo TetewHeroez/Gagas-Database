@@ -93,7 +93,6 @@ const SearchResultsPage = () => {
 
   const handlePageChange = (newPage) => {
     // Fungsi ini belum diimplementasikan, akan kita tambahkan nanti
-    console.log("Pindah ke halaman:", newPage);
   };
 
   // Kelas konsisten untuk input form

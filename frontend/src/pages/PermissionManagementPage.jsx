@@ -2,22 +2,15 @@ import React, { useState, useEffect } from "react";
 import api from "../api/api";
 import toast from "react-hot-toast";
 import { Lock, Save, Loader2 } from "lucide-react";
+// 1. Impor daftar jenis dokumen yang baru dari file konstanta
+import { documentTypesList } from "../constants/documentTypes";
 
 const PermissionManagementPage = () => {
   const [permissions, setPermissions] = useState({});
   const [jabatans, setJabatans] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const documentTypes = [
-    "RAB",
-    "Berita Acara",
-    "Jadwal Piket",
-    "Surat Jalan",
-    "Laporan Proyek",
-    "Absensi Karyawan",
-    "Notulen Rapat",
-    "Arsip Kontrak",
-  ];
+  // Kita tidak lagi mendefinisikan documentTypes di sini, karena sudah diimpor
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,14 +18,18 @@ const PermissionManagementPage = () => {
         // Ambil semua pengguna untuk mendapatkan daftar jabatan unik
         const usersRes = await api.get("/api/users?pageSize=1000"); // Ambil semua user
         const uniqueJabatans = [
-          ...new Set(usersRes.data.users.map((u) => u.jabatan)),
+          ...new Set(usersRes.data.users.map((u) => u.divisi)),
         ].sort();
         setJabatans(uniqueJabatans);
 
         // Ambil semua aturan hak akses yang sudah ada
         const permissionsRes = await api.get("/api/permissions");
         const permsMap = permissionsRes.data.reduce((acc, p) => {
-          acc[p.jabatan] = new Set(p.allowedDocumentTypes);
+          // Filter hanya nilai yang valid dari database
+          const validTypes = p.allowedDocumentTypes.filter((type) =>
+            documentTypesList.includes(type)
+          );
+          acc[p.divisi] = new Set(validTypes);
           return acc;
         }, {});
         setPermissions(permsMap);
@@ -47,25 +44,16 @@ const PermissionManagementPage = () => {
 
   const handleCheckboxChange = (jabatan, docType) => {
     setPermissions((prev) => {
-      // Salin state sebelumnya untuk dimodifikasi
       const newPerms = { ...prev };
-
-      // Pastikan ada Set untuk jabatan ini
       if (!newPerms[jabatan]) {
         newPerms[jabatan] = new Set();
       }
-
-      // Salin Set yang ada agar tidak memutasi state secara langsung
       const jabatanPerms = new Set(newPerms[jabatan]);
-
-      // Tambah atau hapus item dari Set
       if (jabatanPerms.has(docType)) {
         jabatanPerms.delete(docType);
       } else {
         jabatanPerms.add(docType);
       }
-
-      // Perbarui state dengan Set yang sudah dimodifikasi
       newPerms[jabatan] = jabatanPerms;
       return newPerms;
     });
@@ -77,7 +65,16 @@ const PermissionManagementPage = () => {
       const allowedDocumentTypes = permissions[jabatan]
         ? Array.from(permissions[jabatan])
         : [];
-      await api.post("/api/permissions", { jabatan, allowedDocumentTypes });
+
+      // Filter hanya nilai yang valid sesuai dengan documentTypesList
+      const validDocumentTypes = allowedDocumentTypes.filter((type) =>
+        documentTypesList.includes(type)
+      );
+
+      await api.post("/api/permissions", {
+        divisi: jabatan,
+        allowedDocumentTypes: validDocumentTypes,
+      });
       toast.success(`Hak akses untuk ${jabatan} berhasil disimpan.`, {
         id: toastId,
       });
@@ -99,7 +96,7 @@ const PermissionManagementPage = () => {
         Pengaturan Hak Akses Dokumen
       </h1>
       <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-        Atur jenis dokumen apa saja yang dapat diakses oleh setiap jabatan.
+        Atur jenis dokumen apa saja yang dapat diakses oleh setiap divisi.
         Jangan lupa klik "Simpan" setelah membuat perubahan.
       </p>
       <div className="space-y-6">
@@ -120,7 +117,8 @@ const PermissionManagementPage = () => {
               </button>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-              {documentTypes.map((docType) => (
+              {/* 2. Gunakan daftar baru yang sudah diimpor */}
+              {documentTypesList.map((docType) => (
                 <label
                   key={docType}
                   className="flex items-center space-x-2 cursor-pointer"

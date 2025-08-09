@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { documentTypesEnum } from "../constants/documentConstants.js"; // Impor daftar jenis dokumen yang baru
 
 const documentSchema = new mongoose.Schema(
   {
@@ -6,22 +7,15 @@ const documentSchema = new mongoose.Schema(
     jenisDokumen: {
       type: String,
       required: true,
-      enum: [
-        "RAB",
-        "Berita Acara",
-        "Jadwal Piket",
-        "Surat Jalan",
-        "Laporan Proyek",
-        "Absensi Karyawan",
-        "Notulen Rapat",
-        "Arsip Kontrak",
-      ],
+      enum: documentTypesEnum,
     },
     nomorSurat: { type: String, required: true, unique: true },
     tanggalDokumen: { type: Date, required: true },
     namaPT: { type: String, default: "Perusahaan Anda" },
-    isi: { type: String, required: true },
-    // Mengganti path lokal dengan URL Cloudinary
+    // --- PERUBAHAN DI SINI ---
+    perihal: { type: String, required: true }, // Mengganti 'isi'
+    hardCopyLocation: { type: String, required: false }, // Field baru, opsional
+    // --- ---
     fileUrl: { type: String, required: false },
     filePublicId: { type: String, required: false },
     createdBy: {
@@ -35,6 +29,7 @@ const documentSchema = new mongoose.Schema(
   }
 );
 
-documentSchema.index({ judul: "text", isi: "text", namaPT: "text" });
+// Perbarui text index untuk menyertakan 'perihal'
+documentSchema.index({ judul: "text", perihal: "text", namaPT: "text" });
 const Document = mongoose.model("Document", documentSchema);
 export default Document;

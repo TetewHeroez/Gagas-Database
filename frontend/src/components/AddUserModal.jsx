@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import toast from "react-hot-toast";
 import PasswordInput from "./PasswordInput";
 import api from "../api/api";
+import { divisionList } from "../constants/divisions"; // Impor daftar divisi
 
 const AddUserModal = ({ isOpen, onClose, onUserAdded }) => {
   const [formData, setFormData] = useState({
@@ -11,7 +12,7 @@ const AddUserModal = ({ isOpen, onClose, onUserAdded }) => {
     namaLengkap: "",
     password: "",
     tipeAkses: "user",
-    jabatan: "",
+    divisi: divisionList[0], // Set default divisi ke item pertama dari daftar
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -38,7 +39,6 @@ const AddUserModal = ({ isOpen, onClose, onUserAdded }) => {
 
   if (!isOpen) return null;
 
-  // CSS class yang konsisten untuk semua input
   const inputClass =
     "w-full p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500";
 
@@ -98,14 +98,18 @@ const AddUserModal = ({ isOpen, onClose, onUserAdded }) => {
             <option value="user">User</option>
             <option value="admin">Admin</option>
           </select>
-          <input
-            name="jabatan"
-            value={formData.jabatan}
+          <select
+            name="divisi"
+            value={formData.divisi}
             onChange={handleChange}
-            placeholder="Jabatan (cth: HRD)"
-            required
             className={inputClass}
-          />
+          >
+            {divisionList.map((div) => (
+              <option key={div} value={div}>
+                {div}
+              </option>
+            ))}
+          </select>
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <div className="flex justify-end space-x-3 pt-2">
             <button

@@ -4,6 +4,7 @@ import { Toaster } from "react-hot-toast";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import api from "../api/api";
+import { documentTypesList } from "../constants/documentTypes";
 
 const DashboardLayout = ({ userData, onLogout }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -15,17 +16,7 @@ const DashboardLayout = ({ userData, onLogout }) => {
       if (!userData) return;
       // Admin diizinkan mengakses semua jenis dokumen
       if (userData.tipeAkses === "admin") {
-        const allDocumentTypes = [
-          "RAB",
-          "Berita Acara",
-          "Jadwal Piket",
-          "Surat Jalan",
-          "Laporan Proyek",
-          "Absensi Karyawan",
-          "Notulen Rapat",
-          "Arsip Kontrak",
-        ];
-        setAllowedTypes(allDocumentTypes);
+        setAllowedTypes(documentTypesList);
         return;
       }
       // Pengguna biasa akan mengambil hak akses dari server

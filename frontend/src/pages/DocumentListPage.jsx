@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useOutletContext } from "react-router-dom"; // 1. Impor useOutletContext
 import api from "../api/api";
 import toast from "react-hot-toast";
 import {
@@ -14,10 +14,11 @@ import ConfirmationModal from "../components/ConfirmationModal";
 import EditDocumentModal from "../components/EditDocumentModal";
 import { useUndo } from "../hooks/useUndo.jsx";
 import Pagination from "../components/Pagination";
-import SortableHeader from "../components/SortableHeader"; // Impor komponen header
+import SortableHeader from "../components/SortableHeader";
 
 const DocumentListPage = () => {
   const { type } = useParams();
+  const { allowedTypes } = useOutletContext(); // 2. Ambil hak akses dari layout
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -43,30 +44,29 @@ const DocumentListPage = () => {
     "/api/documents"
   );
 
-  const fetchDocuments = async (pageNumber, size, sort) => {
-    try {
-      setLoading(true);
-      setError("");
-      const params = new URLSearchParams({
-        pageNumber,
-        pageSize: size,
-        sortBy: sort.key,
-        sortOrder: sort.direction,
-      });
-      const { data } = await api.get(
-        `/api/documents/type/${type}?${params.toString()}`
-      );
-      setDocuments(data.documents);
-      setPage(data.page);
-      setTotalPages(data.totalPages);
-    } catch (err) {
-      setError("Gagal memuat dokumen. Silakan coba lagi.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchDocuments = async (pageNumber, size, sort) => {
+      try {
+        setLoading(true);
+        setError("");
+        const params = new URLSearchParams({
+          pageNumber,
+          pageSize: size,
+          sortBy: sort.key,
+          sortOrder: sort.direction,
+        });
+        const { data } = await api.get(
+          `/api/documents/type/${type}?${params.toString()}`
+        );
+        setDocuments(data.documents);
+        setPage(data.page);
+        setTotalPages(data.totalPages);
+      } catch (err) {
+        setError("Gagal memuat dokumen. Silakan coba lagi.");
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchDocuments(page, pageSize, sortConfig);
   }, [type, page, pageSize, sortConfig]);
 
@@ -143,7 +143,7 @@ const DocumentListPage = () => {
                       sortConfig={sortConfig}
                       onSort={handleSort}
                     >
-                      Judul
+                      Judul & Perihal
                     </SortableHeader>
                     <SortableHeader
                       field="nomorSurat"
@@ -161,6 +161,12 @@ const DocumentListPage = () => {
                     </SortableHeader>
                     <th
                       scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white"
+                    >
+                      Dibuat Oleh
+                    </th>
+                    <th
+                      scope="col"
                       className="relative py-3.5 pl-3 pr-4 sm:pr-0"
                     >
                       <span className="sr-only">Aksi</span>
@@ -170,8 +176,13 @@ const DocumentListPage = () => {
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
                   {documents.map((doc) => (
                     <tr key={doc._id}>
-                      <td className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-0">
-                        {doc.judul}
+                      <td className="py-4 pl-4 pr-3 text-sm sm:pl-0">
+                        <div className="font-medium text-gray-900 dark:text-white">
+                          {doc.judul}
+                        </div>
+                        <div className="text-gray-500 dark:text-gray-400 truncate max-w-xs">
+                          {doc.perihal}
+                        </div>
                       </td>
                       <td className="px-3 py-4 text-sm text-gray-500 dark:text-gray-300">
                         {doc.nomorSurat}
@@ -180,6 +191,14 @@ const DocumentListPage = () => {
                         {new Date(doc.tanggalDokumen).toLocaleDateString(
                           "id-ID"
                         )}
+                      </td>
+                      <td className="px-3 py-4 text-sm text-gray-500 dark:text-gray-300">
+                        <div className="font-medium text-gray-900 dark:text-white">
+                          {doc.createdBy?.namaLengkap || "N/A"}
+                        </div>
+                        <div className="text-xs">
+                          {doc.createdBy?.divisi || ""}
+                        </div>
                       </td>
                       <td className="relative py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0 space-x-2">
                         <Link
@@ -253,6 +272,7 @@ const DocumentListPage = () => {
         </h1>
         {renderContent()}
       </div>
+
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
@@ -260,11 +280,13 @@ const DocumentListPage = () => {
         title="Hapus Dokumen"
         message={`Apakah Anda yakin ingin menghapus dokumen "${deletingDocument?.judul}"? Aksi ini tidak dapat dibatalkan.`}
       />
+      {/* 3. Teruskan allowedTypes ke modal edit */}
       <EditDocumentModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         documentToEdit={editingDocument}
         onDocumentUpdated={handleDocumentUpdated}
+        allowedTypes={allowedTypes}
       />
     </>
   );

@@ -2,25 +2,24 @@ import React, { useState, useEffect } from "react";
 import { X, UploadCloud } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../api/api";
+import { useOutletContext } from "react-router-dom";
+import {
+  initialDocumentState,
+  documentTypesList,
+} from "../constants/documentTypes";
 
 const EditDocumentModal = ({
   isOpen,
   onClose,
   documentToEdit,
   onDocumentUpdated,
-  allowedTypes,
 }) => {
-  const [formData, setFormData] = useState({
-    judul: "",
-    jenisDokumen: "",
-    nomorSurat: "",
-    tanggalDokumen: "",
-    namaPT: "",
-    isi: "",
-  });
+  const { allowedTypes } = useOutletContext();
+  const [formData, setFormData] = useState(initialDocumentState);
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("Pilih file baru (opsional)...");
   const [loading, setLoading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
 
   useEffect(() => {
     if (documentToEdit) {
@@ -32,33 +31,83 @@ const EditDocumentModal = ({
           .toISOString()
           .split("T")[0],
         namaPT: documentToEdit.namaPT,
-        isi: documentToEdit.isi,
+        perihal: documentToEdit.perihal,
+        hardCopyLocation: documentToEdit.hardCopyLocation || "",
       });
+      setFile(null);
+      setFileName(
+        documentToEdit.fileUrl
+          ? "File sudah ada. Ganti jika perlu."
+          : "Pilih file baru (opsional)..."
+      );
     }
   }, [documentToEdit]);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
+
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-    setFileName(
-      e.target.files[0]
-        ? e.target.files[0].name
-        : "Pilih file baru (opsional)..."
-    );
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setFileName(selectedFile.name);
+    }
+  };
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const droppedFile = e.dataTransfer.files[0];
+      setFile(droppedFile);
+      setFileName(droppedFile.name);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const uploadData = new FormData();
-    Object.keys(formData).forEach((key) =>
-      uploadData.append(key, formData[key])
-    );
-    if (file) {
-      uploadData.append("documentFile", file);
-    }
+
     try {
+      // Validation
+      if (
+        !formData.judul ||
+        !formData.jenisDokumen ||
+        !formData.nomorSurat ||
+        !formData.tanggalDokumen ||
+        !formData.perihal
+      ) {
+        toast.error("Harap isi semua field yang wajib!");
+        setLoading(false);
+        return;
+      }
+
+      const uploadData = new FormData();
+      Object.keys(formData).forEach((key) => {
+        if (
+          formData[key] !== null &&
+          formData[key] !== undefined &&
+          formData[key] !== ""
+        ) {
+          uploadData.append(key, formData[key]);
+        }
+      });
+
+      if (file) {
+        uploadData.append("documentFile", file);
+      }
+
       const { data } = await api.put(
         `/api/documents/${documentToEdit._id}`,
         uploadData,
@@ -66,13 +115,25 @@ const EditDocumentModal = ({
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
+
       toast.success("Dokumen berhasil diperbarui!");
       onDocumentUpdated(data);
       onClose();
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Gagal memperbarui dokumen."
-      );
+      console.error("Error updating document:", error);
+      console.error("Error response:", error.response);
+
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else if (error.response?.data?.errors) {
+        toast.error(
+          "Validation errors: " + error.response.data.errors.join(", ")
+        );
+      } else if (error.message) {
+        toast.error("Error: " + error.message);
+      } else {
+        toast.error("Gagal memperbarui dokumen. Silakan coba lagi.");
+      }
     } finally {
       setLoading(false);
     }
@@ -110,7 +171,7 @@ const EditDocumentModal = ({
             onChange={handleChange}
             className={inputClass}
           >
-            {allowedTypes.map((type) => (
+            {(allowedTypes || documentTypesList).map((type) => (
               <option key={type} value={type}>
                 {type}
               </option>
@@ -140,18 +201,36 @@ const EditDocumentModal = ({
             className={inputClass}
           />
           <textarea
-            name="isi"
-            value={formData.isi}
+            name="perihal"
+            value={formData.perihal}
             onChange={handleChange}
-            placeholder="Isi / Ringkasan Dokumen"
+            placeholder="Isi / Perihal"
             required
             rows="3"
             className={inputClass}
           ></textarea>
-          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md">
-            <div className="space-y-1 text-center">
+          <input
+            name="hardCopyLocation"
+            value={formData.hardCopyLocation}
+            onChange={handleChange}
+            placeholder="Lokasi Hard Copy (Opsional)"
+            className={inputClass}
+          />
+
+          <div
+            className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md transition-colors ${
+              dragActive
+                ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20"
+                : "border-gray-300 dark:border-gray-600"
+            }`}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+          >
+            <div className="w-full text-center">
               <UploadCloud className="mx-auto h-12 w-12 text-gray-400" />
-              <div className="flex text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex justify-center text-sm text-gray-600 dark:text-gray-400">
                 <label
                   htmlFor="edit-file-upload"
                   className="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md font-medium text-indigo-600 hover:text-indigo-500"
@@ -167,11 +246,12 @@ const EditDocumentModal = ({
                 </label>
                 <p className="pl-1">atau seret dan lepas</p>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-500">
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                 {fileName}
               </p>
             </div>
           </div>
+
           <div className="flex justify-end space-x-3 pt-2">
             <button
               type="button"

@@ -78,8 +78,8 @@ const ProfilePage = () => {
           <ProfileDetail icon={Mail} label="Email" value={userData.email} />
           <ProfileDetail
             icon={Briefcase}
-            label="Jabatan"
-            value={userData.jabatan}
+            label="Divisi"
+            value={userData.divisi}
           />
           <ProfileDetail
             icon={KeyRound}

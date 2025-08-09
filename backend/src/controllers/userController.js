@@ -1,26 +1,24 @@
-import User from "../models/User.js"; // Impor model User
+import User from "../models/User.js";
 
-// --- FUNGSI BARU UNTUK MENGAMBIL PROFIL PENGGUNA LOGIN ---
-export const getUserProfile = async (req, res) => {
-  // Middleware 'protect' sudah bekerja di sini. Ia mengambil token,
-  // memverifikasinya, dan melampirkan data pengguna ke 'req.user'.
-  // Jadi, kita hanya perlu mengirim kembali data tersebut.
-  if (req.user) {
-    res.json(req.user);
-  } else {
-    res.status(404).json({ message: "Pengguna tidak ditemukan" });
-  }
-};
-
-// --- FUNGSI CREATE USER ---
+// --- FUNGSI CREATEUSER (DIPERBARUI) ---
 export const createUser = async (req, res) => {
-  const { username, email, namaLengkap, password, tipeAkses, jabatan } =
+  // Menggunakan 'divisi' bukan 'jabatan'
+  const { username, email, namaLengkap, password, tipeAkses, divisi } =
     req.body;
 
   try {
-    const userExists = await User.findOne({ email });
-    if (userExists) {
+    const emailExists = await User.findOne({ email });
+    if (emailExists) {
       return res.status(409).json({ message: "Email sudah terdaftar." });
+    }
+
+    const usernameExists = await User.findOne({ username });
+    if (usernameExists) {
+      return res
+        .status(409)
+        .json({
+          message: "Username sudah digunakan. Silakan pilih yang lain.",
+        });
     }
 
     const user = await User.create({
@@ -29,7 +27,7 @@ export const createUser = async (req, res) => {
       namaLengkap,
       password,
       tipeAkses,
-      jabatan,
+      divisi,
     });
 
     if (user) {
@@ -48,18 +46,30 @@ export const createUser = async (req, res) => {
   }
 };
 
-// --- FUNGSI UPDATE USER ---
+// --- FUNGSI UPDATEUSER (DIPERBARUI) ---
 export const updateUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
     if (user) {
+      if (
+        req.user._id.toString() === user._id.toString() &&
+        user.tipeAkses === "admin" &&
+        req.body.tipeAkses !== "admin"
+      ) {
+        return res
+          .status(400)
+          .json({
+            message: "Anda tidak dapat mengubah tipe akses akun Anda sendiri.",
+          });
+      }
+
       user.username = req.body.username || user.username;
       user.email = req.body.email || user.email;
       user.namaLengkap = req.body.namaLengkap || user.namaLengkap;
       user.tipeAkses = req.body.tipeAkses || user.tipeAkses;
-      user.jabatan = req.body.jabatan || user.jabatan;
-      // Logika untuk mengubah password bisa ditambahkan di sini jika perlu
+      // Menggunakan 'divisi' bukan 'jabatan'
+      user.divisi = req.body.divisi || user.divisi;
 
       const updatedUser = await user.save();
       const { password: _, ...userWithoutPassword } = updatedUser.toObject();
@@ -78,33 +88,52 @@ export const updateUser = async (req, res) => {
   }
 };
 
-// --- FUNGSI BARU UNTUK GANTI PASSWORD ---
+// --- FUNGSI LAINNYA ---
+// (Fungsi lain seperti getUsers, getUserProfile, dll. tidak perlu diubah
+// karena mereka tidak secara langsung memanipulasi field 'jabatan')
+export const getUsers = async (req, res) => {
+  try {
+    const pageSize = Number(req.query.pageSize) || 10;
+    const page = Number(req.query.pageNumber) || 1;
+    const sortBy = req.query.sortBy || "createdAt";
+    const sortOrder = req.query.sortOrder || "desc";
+    const statusFilter = req.query.status ? { status: req.query.status } : {};
+    const sortOptions = { [sortBy]: sortOrder };
+    const count = await User.countDocuments(statusFilter);
+    const users = await User.find(statusFilter)
+      .sort(sortOptions)
+      .limit(pageSize)
+      .skip(pageSize * (page - 1))
+      .select("-password");
+    res.json({ users, page, totalPages: Math.ceil(count / pageSize) });
+  } catch (error) {
+    res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+};
+export const getUserProfile = async (req, res) => {
+  if (req.user) {
+    res.json(req.user);
+  } else {
+    res.status(404).json({ message: "Pengguna tidak ditemukan" });
+  }
+};
 export const changeUserPassword = async (req, res) => {
   const { currentPassword, newPassword } = req.body;
-
   if (!currentPassword || !newPassword) {
     return res
       .status(400)
       .json({ message: "Password lama dan baru harus diisi." });
   }
-
   try {
-    // Cari pengguna berdasarkan ID dari URL
     const user = await User.findById(req.params.id);
-
     if (!user) {
       return res.status(404).json({ message: "Pengguna tidak ditemukan." });
     }
-
-    // Cocokkan password lama yang dimasukkan dengan yang ada di database
     if (await user.matchPassword(currentPassword)) {
-      // Jika cocok, set password baru.
-      // Hook pre-save di model User akan otomatis mengenkripsinya.
       user.password = newPassword;
       await user.save();
       res.json({ message: "Password berhasil diperbarui!" });
     } else {
-      // Jika password lama tidak cocok
       res.status(401).json({ message: "Password lama salah." });
     }
   } catch (error) {
@@ -113,75 +142,14 @@ export const changeUserPassword = async (req, res) => {
       .json({ message: "Terjadi kesalahan pada server", error: error.message });
   }
 };
-
-// --- FUNGSI BARU UNTUK HAPUS PENGGUNA ---
-export const deleteUser = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-
-    if (user) {
-      // Tambahan: Jangan biarkan admin menghapus akunnya sendiri
-      // Anda perlu cara untuk mendapatkan ID admin yang sedang login dari token,
-      // untuk saat ini kita asumsikan tidak bisa menghapus 'admin@example.com'
-      if (user.email === "admin@example.com") {
-        res.status(400);
-        throw new Error("Tidak dapat menghapus akun administrator utama.");
-      }
-
-      await user.deleteOne();
-      res.json({ message: "Pengguna berhasil dihapus" });
-    } else {
-      res.status(404);
-      throw new Error("Pengguna tidak ditemukan");
-    }
-  } catch (error) {
-    // Pastikan untuk mengirim status yang sesuai jika sudah diatur
-    const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-    res.status(statusCode).json({ message: error.message });
-  }
-};
-
-export const getUsers = async (req, res) => {
-  try {
-    const pageSize = Number(req.query.pageSize) || 10;
-    const page = Number(req.query.pageNumber) || 1;
-    const sortBy = req.query.sortBy || "createdAt";
-    const sortOrder = req.query.sortOrder || "desc";
-
-    // Buat filter berdasarkan query status
-    const statusFilter = req.query.status ? { status: req.query.status } : {};
-
-    const sortOptions = { [sortBy]: sortOrder };
-
-    const count = await User.countDocuments(statusFilter);
-    const users = await User.find(statusFilter)
-      .sort(sortOptions)
-      .limit(pageSize)
-      .skip(pageSize * (page - 1))
-      .select("-password");
-
-    res.json({
-      users,
-      page,
-      totalPages: Math.ceil(count / pageSize),
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Terjadi kesalahan pada server" });
-  }
-};
-
-// --- FUNGSI DELETE DIGANTI MENJADI TOGGLE STATUS ---
 export const toggleUserStatus = async (req, res) => {
   try {
-    // req.user._id disediakan oleh middleware 'protect'
     if (req.params.id === req.user._id.toString()) {
       return res
         .status(400)
         .json({ message: "Anda tidak dapat menonaktifkan akun Anda sendiri." });
     }
-
     const user = await User.findById(req.params.id);
-
     if (user) {
       if (user.email === process.env.ADMIN_EMAIL) {
         return res

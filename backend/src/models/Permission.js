@@ -1,25 +1,20 @@
 import mongoose from "mongoose";
+import { documentTypesEnum } from "../constants/documentConstants.js";
 
 const permissionSchema = new mongoose.Schema(
   {
-    jabatan: {
+    // --- PERBAIKAN DI SINI ---
+    // Pastikan field ini bernama 'divisi' bukan 'jabatan'
+    divisi: {
       type: String,
       required: true,
-      unique: true, // Setiap jabatan hanya punya satu set aturan
+      unique: true,
     },
+    // --- ---
     allowedDocumentTypes: [
       {
         type: String,
-        enum: [
-          "RAB",
-          "Berita Acara",
-          "Jadwal Piket",
-          "Surat Jalan",
-          "Laporan Proyek",
-          "Absensi Karyawan",
-          "Notulen Rapat",
-          "Arsip Kontrak",
-        ],
+        enum: documentTypesEnum,
       },
     ],
   },

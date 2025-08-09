@@ -43,7 +43,14 @@ export default function App() {
 
   const handleLogin = (dataFromBackend) => {
     setUser(dataFromBackend.user);
-    localStorage.setItem("authToken", dataFromBackend.token);
+
+    // Simpan token dengan error handling
+    try {
+      localStorage.setItem("authToken", dataFromBackend.token);
+    } catch (error) {
+      console.error("Error saving token to localStorage:", error);
+    }
+
     navigate("/");
   };
 

@@ -2,14 +2,17 @@ import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../api/api";
+import { useOutletContext } from "react-router-dom";
+import { divisionList } from "../constants/divisions";
 
 const EditUserModal = ({ isOpen, onClose, userToEdit, onUserUpdated }) => {
+  const { userData } = useOutletContext();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     namaLengkap: "",
     tipeAkses: "user",
-    jabatan: "",
+    divisi: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,7 +24,7 @@ const EditUserModal = ({ isOpen, onClose, userToEdit, onUserUpdated }) => {
         email: userToEdit.email,
         namaLengkap: userToEdit.namaLengkap,
         tipeAkses: userToEdit.tipeAkses,
-        jabatan: userToEdit.jabatan,
+        divisi: userToEdit.divisi,
       });
     }
   }, [userToEdit]);
@@ -48,9 +51,11 @@ const EditUserModal = ({ isOpen, onClose, userToEdit, onUserUpdated }) => {
 
   if (!isOpen) return null;
 
-  // CSS class yang konsisten untuk semua input
   const inputClass =
-    "w-full p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500";
+    "w-full p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed";
+
+  const isSelfEditingAdmin =
+    userData?._id === userToEdit.id && userData?.tipeAkses === "admin";
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
@@ -95,18 +100,28 @@ const EditUserModal = ({ isOpen, onClose, userToEdit, onUserUpdated }) => {
             value={formData.tipeAkses}
             onChange={handleChange}
             className={inputClass}
+            disabled={isSelfEditingAdmin}
+            title={
+              isSelfEditingAdmin
+                ? "Anda tidak dapat mengubah tipe akses akun Anda sendiri."
+                : ""
+            }
           >
             <option value="user">User</option>
             <option value="admin">Admin</option>
           </select>
-          <input
-            name="jabatan"
-            value={formData.jabatan}
+          <select
+            name="divisi"
+            value={formData.divisi}
             onChange={handleChange}
-            placeholder="Jabatan"
-            required
             className={inputClass}
-          />
+          >
+            {divisionList.map((div) => (
+              <option key={div} value={div}>
+                {div}
+              </option>
+            ))}
+          </select>
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <div className="flex justify-end space-x-3 pt-2">
             <button

@@ -27,7 +27,7 @@ const seedData = async () => {
         namaLengkap: process.env.ADMIN_NAMA_LENGKAP || "Administrator",
         password: process.env.ADMIN_PASSWORD, // Pastikan ini diatur!
         tipeAkses: "admin",
-        jabatan: process.env.ADMIN_JABATAN || "Administrator",
+        divisi: process.env.ADMIN_DIVISI || "Administrator",
       });
       console.log(`✅ Akun admin awal untuk ${adminEmail} berhasil dibuat.`);
     } else {

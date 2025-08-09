@@ -13,8 +13,9 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
-    jabatan: { type: String, required: true },
-    // --- FIELD BARU ---
+    // --- PERUBAHAN DI SINI ---
+    divisi: { type: String, required: true }, // Mengganti 'jabatan'
+    // --- ---
     status: {
       type: String,
       required: true,
@@ -33,7 +34,6 @@ userSchema.virtual("id").get(function () {
   return this._id.toHexString();
 });
 
-// Middleware dan method lainnya tetap sama
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);

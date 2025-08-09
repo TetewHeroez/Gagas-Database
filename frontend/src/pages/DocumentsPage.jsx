@@ -1,64 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useOutletContext } from "react-router-dom";
-import {
-  Book,
-  FileBarChart,
-  Calendar,
-  ClipboardList,
-  FileText,
-  Users,
-  Briefcase,
-  FileClock,
-  Search,
-  Plus,
-} from "lucide-react";
+import { Search, Plus, Loader2 } from "lucide-react";
 import AddDocumentModal from "../components/AddDocumentModal";
-
-const allDocumentTypes = [
-  { name: "RAB", icon: FileBarChart, color: "text-blue-500", slug: "RAB" },
-  {
-    name: "Berita Acara",
-    icon: ClipboardList,
-    color: "text-green-500",
-    slug: "Berita Acara",
-  },
-  {
-    name: "Jadwal Piket",
-    icon: Calendar,
-    color: "text-yellow-500",
-    slug: "Jadwal Piket",
-  },
-  {
-    name: "Surat Jalan",
-    icon: FileText,
-    color: "text-purple-500",
-    slug: "Surat Jalan",
-  },
-  {
-    name: "Laporan Proyek",
-    icon: Briefcase,
-    color: "text-red-500",
-    slug: "Laporan Proyek",
-  },
-  {
-    name: "Absensi Karyawan",
-    icon: Users,
-    color: "text-teal-500",
-    slug: "Absensi Karyawan",
-  },
-  {
-    name: "Notulen Rapat",
-    icon: Book,
-    color: "text-orange-500",
-    slug: "Notulen Rapat",
-  },
-  {
-    name: "Arsip Kontrak",
-    icon: FileClock,
-    color: "text-pink-500",
-    slug: "Arsip Kontrak",
-  },
-];
+import { documentTypesDetails } from "../constants/documentTypes";
 
 const DocumentCard = ({ name, icon: Icon, color, slug }) => (
   <Link
@@ -80,7 +24,8 @@ const DocumentCard = ({ name, icon: Icon, color, slug }) => (
 );
 
 const DocumentsPage = () => {
-  const { allowedTypes } = useOutletContext(); // Ambil hak akses dari layout
+  const { userData, allowedTypes } = useOutletContext();
+  const [loading, setLoading] = useState(!allowedTypes); // Tampilkan loading jika allowedTypes belum ada
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -95,6 +40,14 @@ const DocumentsPage = () => {
   const handleDocumentAdded = (newDocument) => {
     navigate(`/documents/type/${encodeURIComponent(newDocument.jenisDokumen)}`);
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -135,7 +88,7 @@ const DocumentsPage = () => {
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {allDocumentTypes
+          {documentTypesDetails
             .filter((doc) => allowedTypes.includes(doc.slug))
             .map((doc) => (
               <DocumentCard key={doc.name} {...doc} />
@@ -153,7 +106,7 @@ const DocumentsPage = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onDocumentAdded={handleDocumentAdded}
-        allowedTypes={allowedTypes} // Teruskan hak akses ke modal
+        allowedTypes={allowedTypes}
       />
     </>
   );

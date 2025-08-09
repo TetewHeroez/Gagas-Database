@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useOutletContext } from "react-router-dom"; // 1. Impor hook untuk mendapatkan data user
+import { useOutletContext } from "react-router-dom";
 import { Plus, Loader2, Users2 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../api/api";
@@ -10,12 +10,11 @@ import Pagination from "../components/Pagination";
 import SortableHeader from "../components/SortableHeader";
 
 const UserManagementPage = () => {
-  const { userData } = useOutletContext(); // 2. Ambil data pengguna yang sedang login
+  const { userData } = useOutletContext();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // State untuk pagination & sorting
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -25,7 +24,6 @@ const UserManagementPage = () => {
   });
   const [statusFilter, setStatusFilter] = useState("aktif");
 
-  // State untuk modal
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -73,12 +71,23 @@ const UserManagementPage = () => {
     setPage(1);
   };
 
-  const handleUserAdded = () =>
-    fetchUsers(page, pageSize, sortConfig, statusFilter);
-  const handleUserUpdated = (updatedUser) =>
+  // --- PERBAIKAN DI SINI ---
+  const handleUserAdded = (newUser) => {
+    toast.success("Pengguna baru berhasil ditambahkan!");
+    // Jika sudah di halaman 1, cukup refresh. Jika tidak, pindah ke halaman 1.
+    if (page === 1) {
+      fetchUsers(1, pageSize, sortConfig, statusFilter);
+    } else {
+      setPage(1); // Ini akan memicu useEffect untuk mengambil data halaman 1
+    }
+  };
+
+  const handleUserUpdated = (updatedUser) => {
     setUsers((current) =>
       current.map((u) => (u.id === updatedUser.id ? updatedUser : u))
     );
+    toast.success("Data pengguna berhasil diperbarui!");
+  };
 
   const openEditModal = (user) => {
     setEditingUser(user);
@@ -140,14 +149,14 @@ const UserManagementPage = () => {
                       sortConfig={sortConfig}
                       onSort={handleSort}
                     >
-                      Nama Lengkap
+                      Nama & Username
                     </SortableHeader>
                     <SortableHeader
-                      field="jabatan"
+                      field="divisi"
                       sortConfig={sortConfig}
                       onSort={handleSort}
                     >
-                      Jabatan
+                      Divisi
                     </SortableHeader>
                     <SortableHeader
                       field="status"
@@ -172,11 +181,11 @@ const UserManagementPage = () => {
                           {user.namaLengkap}
                         </div>
                         <div className="text-gray-500 dark:text-gray-400">
-                          {user.email}
+                          @{user.username}
                         </div>
                       </td>
                       <td className="px-3 py-4 text-sm text-gray-500 dark:text-gray-300">
-                        {user.jabatan}
+                        {user.divisi}
                       </td>
                       <td className="px-3 py-4 text-sm text-gray-500 dark:text-gray-300">
                         <span
@@ -196,7 +205,6 @@ const UserManagementPage = () => {
                         >
                           Edit
                         </button>
-                        {/* 3. Tambahkan logika disabled pada tombol */}
                         <button
                           onClick={() => openConfirmModal(user)}
                           disabled={user.id === userData?._id}

@@ -21,15 +21,23 @@ const protect = async (req, res, next) => {
       // Ini membuat data pengguna tersedia di semua controller selanjutnya
       req.user = await User.findById(decoded.userId).select("-password");
 
+      if (!req.user) {
+        return res
+          .status(401)
+          .json({ message: "Tidak terotorisasi, pengguna tidak ditemukan" });
+      }
+
       next(); // Lanjutkan ke controller berikutnya
     } catch (error) {
-      console.error(error);
-      res.status(401).json({ message: "Tidak terotorisasi, token gagal" });
+      console.error("Token verification error:", error.message);
+      return res
+        .status(401)
+        .json({ message: "Tidak terotorisasi, token gagal" });
     }
-  }
-
-  if (!token) {
-    res.status(401).json({ message: "Tidak terotorisasi, tidak ada token" });
+  } else {
+    return res
+      .status(401)
+      .json({ message: "Tidak terotorisasi, tidak ada token" });
   }
 };
 

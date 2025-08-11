@@ -15,7 +15,7 @@ const Header = ({ setSidebarOpen, onLogout, userData }) => {
 
       {/* Judul Halaman (bisa dibuat dinamis nanti) */}
       <h2 className="text-lg font-semibold text-gray-800 dark:text-white hidden lg:block">
-        Selamat Datang, {userData.email}
+        Selamat Datang, {userData.username}
       </h2>
 
       {/* Aksi di Kanan */}

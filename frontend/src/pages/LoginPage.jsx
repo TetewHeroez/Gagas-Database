@@ -66,7 +66,7 @@ function LoginPage({ onLogin, onForgotPassword }) {
         >
           {loading ? "Memproses..." : "Login"}
         </button>
-        
+
         <div className="text-center mt-4">
           <button
             type="button"

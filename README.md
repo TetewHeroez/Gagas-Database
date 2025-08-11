@@ -11,6 +11,7 @@ A comprehensive document management system built with **Node.js**, **Express**, 
 ## 🚀 Features
 
 ### Core Features
+
 - **📄 Document Management**: Upload, view, edit, and delete documents
 - **👥 User Management**: Admin can manage users and their permissions
 - **🔐 Authentication & Authorization**: JWT-based authentication with role-based access
@@ -20,6 +21,7 @@ A comprehensive document management system built with **Node.js**, **Express**, 
 - **📱 Responsive Design**: Works seamlessly on desktop and mobile devices
 
 ### Security Features
+
 - **🔒 Forgot Password**: Email-based password reset functionality
 - **🛡️ Token-based Authentication**: Secure JWT implementation
 - **👮 Role-based Access Control**: Admin and user roles with different permissions
@@ -27,6 +29,7 @@ A comprehensive document management system built with **Node.js**, **Express**, 
 - **⏰ Session Management**: Automatic token expiration and refresh
 
 ### Document Features
+
 - **☁️ Cloud Storage**: Integration with Cloudinary for file storage
 - **📎 Multiple File Types**: Support for various document formats
 - **🏷️ Document Categories**: Organize documents by type and division
@@ -36,6 +39,7 @@ A comprehensive document management system built with **Node.js**, **Express**, 
 ## 🛠️ Tech Stack
 
 ### Backend
+
 - **Node.js** - Runtime environment
 - **Express.js** - Web framework
 - **MongoDB** - NoSQL database
@@ -47,6 +51,7 @@ A comprehensive document management system built with **Node.js**, **Express**, 
 - **Multer** - File upload handling
 
 ### Frontend
+
 - **React** - Frontend library
 - **Vite** - Build tool and dev server
 - **React Router** - Client-side routing
@@ -121,6 +126,7 @@ FRONTEND_URL="http://localhost:5173"
 ### 5. Database Setup
 
 #### Option A: MongoDB Atlas (Recommended)
+
 1. Create a free account at [MongoDB Atlas](https://cloud.mongodb.com/)
 2. Create a new cluster
 3. Get your connection string
@@ -128,6 +134,7 @@ FRONTEND_URL="http://localhost:5173"
 5. Update `MONGO_URI` in your `.env` file
 
 #### Option B: Local MongoDB
+
 1. Install MongoDB locally
 2. Start MongoDB service
 3. Use local connection string: `mongodb://localhost:27017/gagas-database`
@@ -141,10 +148,12 @@ FRONTEND_URL="http://localhost:5173"
 ### 7. Email Setup (Optional for Development)
 
 #### For Development (Default)
+
 - Leave email configuration as is
 - Emails will be logged to console instead of being sent
 
 #### For Production (Gmail)
+
 1. Enable 2-Factor Authentication on your Gmail account
 2. Generate an App Password:
    - Go to Google Account Settings
@@ -153,6 +162,7 @@ FRONTEND_URL="http://localhost:5173"
 3. Update `EMAIL_USER` and `EMAIL_PASS` in `.env`
 
 #### For Production (Other Providers)
+
 ```env
 # For Outlook/Hotmail
 EMAIL_USER="your-email@outlook.com"
@@ -168,28 +178,34 @@ EMAIL_PASS="your-password"
 ### Development Mode
 
 1. **Start Backend Server**:
+
 ```bash
 cd backend
 pnpm run dev
 ```
+
 The backend will run on `http://localhost:5000`
 
 2. **Start Frontend Development Server**:
+
 ```bash
 cd frontend
 pnpm run dev
 ```
+
 The frontend will run on `http://localhost:5173` (or next available port)
 
 ### Production Mode
 
 1. **Build Frontend**:
+
 ```bash
 cd frontend
 pnpm run build
 ```
 
 2. **Start Backend**:
+
 ```bash
 cd backend
 pnpm start
@@ -256,38 +272,38 @@ After seeding the database, you can login with:
 
 ### Authentication Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/login` | User login |
-| POST | `/api/auth/forgot-password` | Request password reset |
-| POST | `/api/auth/reset-password/:token` | Reset password with token |
+| Method | Endpoint                          | Description               |
+| ------ | --------------------------------- | ------------------------- |
+| POST   | `/api/auth/login`                 | User login                |
+| POST   | `/api/auth/forgot-password`       | Request password reset    |
+| POST   | `/api/auth/reset-password/:token` | Reset password with token |
 
 ### User Management Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/users` | Get all users (Admin only) |
-| GET | `/api/users/profile` | Get current user profile |
-| POST | `/api/users` | Create new user (Admin only) |
-| PUT | `/api/users/:id` | Update user (Admin only) |
-| DELETE | `/api/users/:id` | Delete user (Admin only) |
+| Method | Endpoint             | Description                  |
+| ------ | -------------------- | ---------------------------- |
+| GET    | `/api/users`         | Get all users (Admin only)   |
+| GET    | `/api/users/profile` | Get current user profile     |
+| POST   | `/api/users`         | Create new user (Admin only) |
+| PUT    | `/api/users/:id`     | Update user (Admin only)     |
+| DELETE | `/api/users/:id`     | Delete user (Admin only)     |
 
 ### Document Management Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/documents` | Get all documents |
-| GET | `/api/documents/:id` | Get document by ID |
-| POST | `/api/documents` | Create new document |
-| PUT | `/api/documents/:id` | Update document |
-| DELETE | `/api/documents/:id` | Delete document |
+| Method | Endpoint             | Description         |
+| ------ | -------------------- | ------------------- |
+| GET    | `/api/documents`     | Get all documents   |
+| GET    | `/api/documents/:id` | Get document by ID  |
+| POST   | `/api/documents`     | Create new document |
+| PUT    | `/api/documents/:id` | Update document     |
+| DELETE | `/api/documents/:id` | Delete document     |
 
 ### Dashboard Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/dashboard/stats` | Get dashboard statistics |
-| GET | `/api/dashboard/recent-documents` | Get recent documents |
+| Method | Endpoint                          | Description              |
+| ------ | --------------------------------- | ------------------------ |
+| GET    | `/api/dashboard/stats`            | Get dashboard statistics |
+| GET    | `/api/dashboard/recent-documents` | Get recent documents     |
 
 ## 🔐 Forgot Password Feature
 
@@ -301,16 +317,19 @@ After seeding the database, you can login with:
 ### Email Configuration Modes
 
 #### Development Mode
+
 - Emails are logged to backend console
 - Reset URLs are displayed in console for testing
 - No actual email sending required
 
 #### Production Mode
+
 - Emails are sent to user's inbox
 - Requires valid email service configuration
 - Supports Gmail, Outlook, Yahoo, and custom SMTP
 
 ### Security Features
+
 - Tokens expire after 1 hour
 - Tokens are cryptographically hashed
 - Email validation before sending
@@ -322,6 +341,7 @@ After seeding the database, you can login with:
 ### User Roles
 
 #### Admin
+
 - Full access to all features
 - User management (create, edit, delete users)
 - Document management for all documents
@@ -329,12 +349,14 @@ After seeding the database, you can login with:
 - Dashboard with full statistics
 
 #### Regular User
+
 - View and manage assigned documents
 - Profile management
 - Limited dashboard access
 - Document search and filtering
 
 ### Document Types
+
 - Surat Masuk (Incoming Letters)
 - Surat Keluar (Outgoing Letters)
 - Memo Internal (Internal Memos)
@@ -345,6 +367,7 @@ After seeding the database, you can login with:
 - Lainnya (Others)
 
 ### Divisions
+
 - Direktur (Director)
 - Manager
 - Supervisor
@@ -371,6 +394,7 @@ After seeding the database, you can login with:
 ### Frontend Deployment (Vercel/Netlify)
 
 1. Build the frontend:
+
 ```bash
 cd frontend
 pnpm run build
@@ -411,7 +435,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👥 Authors
 
-- **TetewHeroez** - *Initial work* - [TetewHeroez](https://github.com/TetewHeroez)
+- **TetewHeroez** - _Initial work_ - [TetewHeroez](https://github.com/TetewHeroez)
 
 ## 🙏 Acknowledgments
 

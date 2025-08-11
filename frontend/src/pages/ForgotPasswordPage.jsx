@@ -21,7 +21,8 @@ function ForgotPasswordPage({ onBackToLogin }) {
       setIsSuccess(true);
     } catch (err) {
       console.error("Forgot password error:", err);
-      const errorMessage = err.response?.data?.message || "Gagal mengirim email reset password.";
+      const errorMessage =
+        err.response?.data?.message || "Gagal mengirim email reset password.";
       setError(errorMessage);
       setIsSuccess(false);
     } finally {
@@ -49,7 +50,10 @@ function ForgotPasswordPage({ onBackToLogin }) {
       </div>
 
       {!isSuccess ? (
-        <form onSubmit={handleForgotPassword} className="flex flex-col space-y-4">
+        <form
+          onSubmit={handleForgotPassword}
+          className="flex flex-col space-y-4"
+        >
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
@@ -89,7 +93,7 @@ function ForgotPasswordPage({ onBackToLogin }) {
               {message}
             </p>
           </div>
-          
+
           <div className="space-y-3">
             <p className="text-gray-600 dark:text-gray-400 text-sm">
               Periksa inbox email Anda dan ikuti instruksi untuk reset password.

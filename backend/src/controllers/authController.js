@@ -16,12 +16,10 @@ export const loginUser = async (req, res) => {
     if (user && (await user.matchPassword(password))) {
       // --- PENGECEKAN BARU ---
       if (user.status === "nonaktif") {
-        return res
-          .status(403)
-          .json({
-            message:
-              "Akun Anda telah dinonaktifkan. Silakan hubungi administrator.",
-          });
+        return res.status(403).json({
+          message:
+            "Akun Anda telah dinonaktifkan. Silakan hubungi administrator.",
+        });
       }
       // --- ---
 
@@ -57,35 +55,42 @@ export const forgotPassword = async (req, res) => {
     }
 
     if (user.status === "nonaktif") {
-      return res.status(403).json({ 
-        message: "Akun Anda telah dinonaktifkan. Silakan hubungi administrator." 
+      return res.status(403).json({
+        message:
+          "Akun Anda telah dinonaktifkan. Silakan hubungi administrator.",
       });
     }
 
     // Generate reset token
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
     // Hash token dan simpan ke database
-    user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    user.resetPasswordToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
     user.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1 jam
 
     await user.save();
 
     // Kirim email
-    const emailResult = await sendResetPasswordEmail(user.email, resetToken, user.namaLengkap);
+    const emailResult = await sendResetPasswordEmail(
+      user.email,
+      resetToken,
+      user.namaLengkap
+    );
 
     if (!emailResult.success) {
-      return res.status(500).json({ 
-        message: "Gagal mengirim email reset password. Silakan coba lagi." 
+      return res.status(500).json({
+        message: "Gagal mengirim email reset password. Silakan coba lagi.",
       });
     }
 
     res.status(200).json({
-      message: "Email reset password telah dikirim. Silakan cek inbox Anda."
+      message: "Email reset password telah dikirim. Silakan cek inbox Anda.",
     });
-
   } catch (error) {
-    console.error('Forgot password error:', error);
+    console.error("Forgot password error:", error);
     res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
 };
@@ -96,11 +101,15 @@ export const resetPassword = async (req, res) => {
   const { password, confirmPassword } = req.body;
 
   if (!password || !confirmPassword) {
-    return res.status(400).json({ message: "Password dan konfirmasi password harus diisi" });
+    return res
+      .status(400)
+      .json({ message: "Password dan konfirmasi password harus diisi" });
   }
 
   if (password !== confirmPassword) {
-    return res.status(400).json({ message: "Password dan konfirmasi password tidak cocok" });
+    return res
+      .status(400)
+      .json({ message: "Password dan konfirmasi password tidak cocok" });
   }
 
   if (password.length < 6) {
@@ -109,17 +118,17 @@ export const resetPassword = async (req, res) => {
 
   try {
     // Hash token yang diterima
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     // Cari user dengan token yang valid dan belum kedaluwarsa
     const user = await User.findOne({
       resetPasswordToken: hashedToken,
-      resetPasswordExpires: { $gt: Date.now() }
+      resetPasswordExpires: { $gt: Date.now() },
     });
 
     if (!user) {
-      return res.status(400).json({ 
-        message: "Token reset password tidak valid atau sudah kedaluwarsa" 
+      return res.status(400).json({
+        message: "Token reset password tidak valid atau sudah kedaluwarsa",
       });
     }
 
@@ -131,11 +140,10 @@ export const resetPassword = async (req, res) => {
     await user.save();
 
     res.status(200).json({
-      message: "Password berhasil direset. Silakan login dengan password baru."
+      message: "Password berhasil direset. Silakan login dengan password baru.",
     });
-
   } catch (error) {
-    console.error('Reset password error:', error);
+    console.error("Reset password error:", error);
     res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
 };

@@ -1,6 +1,10 @@
 // src/routes/authRoutes.js
 import express from "express";
-import { loginUser, forgotPassword, resetPassword } from "../controllers/authController.js";
+import {
+  loginUser,
+  forgotPassword,
+  resetPassword,
+} from "../controllers/authController.js";
 
 // Membuat instance router dari Express
 const router = express.Router();

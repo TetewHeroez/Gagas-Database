@@ -1,20 +1,24 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // atau service email lain seperti 'outlook', 'yahoo', dll
+  service: "gmail", // atau service email lain seperti 'outlook', 'yahoo', dll
   auth: {
     user: process.env.EMAIL_USER, // email pengirim
     pass: process.env.EMAIL_PASS, // password aplikasi email
   },
 });
 
-export const sendResetPasswordEmail = async (email, resetToken, namaLengkap) => {
+export const sendResetPasswordEmail = async (
+  email,
+  resetToken,
+  namaLengkap
+) => {
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-  
+
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
-    subject: 'Reset Password - Gagas Database',
+    subject: "Reset Password - Gagas Database",
     html: `
       <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
         <div style="text-align: center; margin-bottom: 30px;">
@@ -64,14 +68,18 @@ export const sendResetPasswordEmail = async (email, resetToken, namaLengkap) => 
 
   try {
     // Untuk development, log email content instead of sending
-    if (process.env.NODE_ENV === 'development' || !process.env.EMAIL_USER || process.env.EMAIL_USER === 'your-email@gmail.com') {
-      console.log('📧 DEVELOPMENT MODE - Email would be sent to:', email);
-      console.log('🔗 Reset URL:', resetUrl);
-      console.log('📝 Email content:', {
+    if (
+      process.env.NODE_ENV === "development" ||
+      !process.env.EMAIL_USER ||
+      process.env.EMAIL_USER === "your-email@gmail.com"
+    ) {
+      console.log("📧 DEVELOPMENT MODE - Email would be sent to:", email);
+      console.log("🔗 Reset URL:", resetUrl);
+      console.log("📝 Email content:", {
         from: process.env.EMAIL_USER,
         to: email,
         subject: mailOptions.subject,
-        resetUrl: resetUrl
+        resetUrl: resetUrl,
       });
       return { success: true };
     }
@@ -79,7 +87,7 @@ export const sendResetPasswordEmail = async (email, resetToken, namaLengkap) => 
     await transporter.sendMail(mailOptions);
     return { success: true };
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error("Error sending email:", error);
     return { success: false, error: error.message };
   }
 };

@@ -6,7 +6,7 @@ import api from "../api/api";
 function ResetPasswordPage() {
   const { token } = useParams();
   const navigate = useNavigate();
-  
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -40,20 +40,20 @@ function ResetPasswordPage() {
     try {
       const response = await api.post(`/api/auth/reset-password/${token}`, {
         password,
-        confirmPassword
+        confirmPassword,
       });
-      
+
       setMessage(response.data.message);
       setIsSuccess(true);
-      
+
       // Redirect ke login setelah 3 detik
       setTimeout(() => {
         navigate("/login");
       }, 3000);
-
     } catch (err) {
       console.error("Reset password error:", err);
-      const errorMessage = err.response?.data?.message || "Gagal reset password.";
+      const errorMessage =
+        err.response?.data?.message || "Gagal reset password.";
       setError(errorMessage);
       setIsSuccess(false);
     } finally {
@@ -75,7 +75,10 @@ function ResetPasswordPage() {
         </div>
 
         {!isSuccess ? (
-          <form onSubmit={handleResetPassword} className="flex flex-col space-y-4">
+          <form
+            onSubmit={handleResetPassword}
+            className="flex flex-col space-y-4"
+          >
             {/* Password Input */}
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -92,7 +95,11 @@ function ResetPasswordPage() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
               </button>
             </div>
 
@@ -112,25 +119,51 @@ function ResetPasswordPage() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
-                {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                {showConfirmPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
               </button>
             </div>
 
             {/* Password Validation */}
             <div className="text-xs text-gray-500 dark:text-gray-400">
-              <div className={`flex items-center ${password.length >= 6 ? 'text-green-600' : ''}`}>
-                <CheckCircle className={`h-3 w-3 mr-1 ${password.length >= 6 ? 'text-green-600' : 'text-gray-400'}`} />
+              <div
+                className={`flex items-center ${
+                  password.length >= 6 ? "text-green-600" : ""
+                }`}
+              >
+                <CheckCircle
+                  className={`h-3 w-3 mr-1 ${
+                    password.length >= 6 ? "text-green-600" : "text-gray-400"
+                  }`}
+                />
                 Minimal 6 karakter
               </div>
-              <div className={`flex items-center ${password === confirmPassword && password ? 'text-green-600' : ''}`}>
-                <CheckCircle className={`h-3 w-3 mr-1 ${password === confirmPassword && password ? 'text-green-600' : 'text-gray-400'}`} />
+              <div
+                className={`flex items-center ${
+                  password === confirmPassword && password
+                    ? "text-green-600"
+                    : ""
+                }`}
+              >
+                <CheckCircle
+                  className={`h-3 w-3 mr-1 ${
+                    password === confirmPassword && password
+                      ? "text-green-600"
+                      : "text-gray-400"
+                  }`}
+                />
                 Password cocok
               </div>
             </div>
 
             {error && (
               <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-3">
-                <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+                <p className="text-red-600 dark:text-red-400 text-sm">
+                  {error}
+                </p>
               </div>
             )}
 
@@ -153,7 +186,7 @@ function ResetPasswordPage() {
                 {message}
               </p>
             </div>
-            
+
             <p className="text-gray-600 dark:text-gray-400 text-sm">
               Anda akan diarahkan ke halaman login dalam beberapa detik...
             </p>

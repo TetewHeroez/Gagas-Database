@@ -82,15 +82,18 @@ export default function App() {
   return (
     <Routes>
       <Route element={<PublicLayout />}>
-        <Route 
-          path="/login" 
+        <Route
+          path="/login"
           element={
             showForgotPassword ? (
               <ForgotPasswordPage onBackToLogin={handleBackToLogin} />
             ) : (
-              <LoginPage onLogin={handleLogin} onForgotPassword={handleForgotPassword} />
+              <LoginPage
+                onLogin={handleLogin}
+                onForgotPassword={handleForgotPassword}
+              />
             )
-          } 
+          }
         />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
       </Route>

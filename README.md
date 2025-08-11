@@ -27,6 +27,7 @@ A comprehensive document management system built with **Node.js**, **Express**, 
 - **👮 Role-based Access Control**: Admin and user roles with different permissions
 - **🔐 Password Hashing**: Secure password storage with bcrypt
 - **⏰ Session Management**: Automatic token expiration and refresh
+- **🔑 Database Admin Auto-Access**: Database Admin role has automatic access to all documents
 
 ### Document Features
 
@@ -35,6 +36,7 @@ A comprehensive document management system built with **Node.js**, **Express**, 
 - **🏷️ Document Categories**: Organize documents by type and division
 - **📋 Document Permissions**: Control who can view and edit documents
 - **📈 Document Analytics**: Track document views and downloads
+- **🚀 Auto-Permission System**: Database Admin automatically gets access to new document types
 
 ## 🛠️ Tech Stack
 
@@ -267,6 +269,7 @@ After seeding the database, you can login with:
 - **Username**: `admin_super`
 - **Email**: `admin@company.com` (or as configured in .env)
 - **Password**: `SecureAdminPassword123!` (or as configured in .env)
+- **Division**: `Database Admin` (automatically gets access to all documents)
 
 ## 📚 API Documentation
 
@@ -355,6 +358,14 @@ After seeding the database, you can login with:
 - Limited dashboard access
 - Document search and filtering
 
+#### Database Admin (Special Role)
+
+- **Automatic access** to all document types (existing and future)
+- **Cannot be modified** in permission management
+- **Hidden from permission settings** to prevent accidental changes
+- **Future-proof access** - automatically gets access to new document types
+- All admin privileges plus unrestricted document access
+
 ### Document Types
 
 - Surat Masuk (Incoming Letters)
@@ -378,6 +389,28 @@ After seeding the database, you can login with:
 - Finance
 - Marketing
 - Operations
+
+## 🎯 Permission System
+
+### How Permissions Work
+
+- **Regular Users**: Access controlled by permission settings in admin panel
+- **Admin Users**: Can access all documents and manage permissions
+- **Database Admin**: Special role with automatic access to all documents
+
+### Database Admin Features
+
+- **Automatic Permission**: Gets access to all document types without manual configuration
+- **Future-Proof**: Automatically receives access to newly added document types
+- **Protected Settings**: Cannot be modified in permission management interface
+- **Hidden from UI**: Does not appear in permission management to prevent confusion
+
+### Permission Management
+
+- Admins can set document type permissions for each division
+- Permissions are granted per division (not per individual user)
+- Database Admin division is automatically excluded from permission management
+- Real-time permission updates across the system
 
 ## 🛡️ Security Best Practices
 

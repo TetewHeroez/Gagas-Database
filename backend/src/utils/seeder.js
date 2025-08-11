@@ -1,5 +1,7 @@
 import User from "../models/User.js";
 import Document from "../models/Document.js";
+import Permission from "../models/Permission.js";
+import { documentTypesEnum } from "../constants/documentConstants.js";
 
 const seedData = async () => {
   try {
@@ -32,6 +34,16 @@ const seedData = async () => {
       console.log(`✅ Akun admin awal untuk ${adminEmail} berhasil dibuat.`);
     } else {
       adminUser = await User.findOne({ tipeAkses: "admin" });
+    }
+
+    // Seeding Permission untuk Database Admin
+    const dbAdminPermission = await Permission.findOne({ divisi: "Database Admin" });
+    if (!dbAdminPermission) {
+      await Permission.create({
+        divisi: "Database Admin",
+        allowedDocumentTypes: documentTypesEnum, // Semua jenis dokumen
+      });
+      console.log("✅ Permission untuk Database Admin berhasil dibuat dengan akses ke semua dokumen.");
     }
 
     // Seeding Dokumen (tetap sama)

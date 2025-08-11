@@ -19,7 +19,9 @@ const PermissionManagementPage = () => {
         const usersRes = await api.get("/api/users?pageSize=1000"); // Ambil semua user
         const uniqueJabatans = [
           ...new Set(usersRes.data.users.map((u) => u.divisi)),
-        ].sort();
+        ]
+        .filter(divisi => divisi !== "Database Admin") // Filter out Database Admin
+        .sort();
         setJabatans(uniqueJabatans);
 
         // Ambil semua aturan hak akses yang sudah ada
@@ -95,6 +97,22 @@ const PermissionManagementPage = () => {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
         Pengaturan Hak Akses Dokumen
       </h1>
+      
+      {/* Info Database Admin */}
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-4 mb-6">
+        <div className="flex items-center">
+          <Lock className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" />
+          <div>
+            <p className="text-blue-700 dark:text-blue-300 font-medium">
+              Database Admin
+            </p>
+            <p className="text-blue-600 dark:text-blue-400 text-sm">
+              Memiliki akses otomatis ke semua jenis dokumen dan tidak dapat diubah.
+            </p>
+          </div>
+        </div>
+      </div>
+      
       <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
         Atur jenis dokumen apa saja yang dapat diakses oleh setiap divisi.
         Jangan lupa klik "Simpan" setelah membuat perubahan.

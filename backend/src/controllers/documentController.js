@@ -6,6 +6,10 @@ import { v2 as cloudinary } from "cloudinary";
 const checkPermission = async (user, documentType) => {
   if (!user || !documentType) return false;
   if (user.tipeAkses === "admin") return true;
+  
+  // Database Admin has access to all documents automatically
+  if (user.divisi === "Database Admin") return true;
+  
   const permission = await Permission.findOne({ divisi: user.divisi });
   return permission && permission.allowedDocumentTypes.includes(documentType);
 };

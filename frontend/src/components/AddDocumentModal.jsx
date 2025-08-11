@@ -76,9 +76,6 @@ const AddDocumentModal = ({
       setFileName("Pilih file (opsional)...");
       onClose();
     } catch (error) {
-      console.error("Error submitting document:", error);
-      console.error("Error response:", error.response);
-
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
       } else if (error.response?.data?.errors) {

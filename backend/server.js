@@ -30,13 +30,7 @@ app.use((req, res, next) => {
     req.url.includes("/register") ||
     req.url.includes("/permissions")
   ) {
-    const timestamp = new Date().toISOString();
-    const authPresent = req.headers.authorization ? "Auth present" : "No auth";
-    console.log(`🔥 REQUEST: ${timestamp} - ${req.method} ${req.url}`);
-    console.log(`🔑 ${authPresent}`);
-    if (req.url.includes("/permissions")) {
-      console.log(`📝 PERMISSIONS REQUEST - Body:`, req.body);
-    }
+    // Debug logs removed for production
   }
   next();
 });

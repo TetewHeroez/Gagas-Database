@@ -1,11 +1,14 @@
 import Permission from "../models/Permission.js";
+import { documentTypesEnum } from "../constants/documentConstants.js";
 
 export const getPermissions = async (req, res) => {
   try {
-    const permissions = await Permission.find({});
+    // Filter out Database Admin from permissions list
+    const permissions = await Permission.find({ 
+      divisi: { $ne: "Database Admin" } 
+    });
     res.json(permissions);
   } catch (error) {
-    console.error("❌ Error getting permissions:", error);
     res.status(500).json({ message: "Server Error" });
   }
 };
@@ -13,6 +16,13 @@ export const getPermissions = async (req, res) => {
 export const setPermission = async (req, res) => {
   // Menggunakan 'divisi' bukan 'jabatan'
   const { divisi, allowedDocumentTypes } = req.body;
+
+  // Prevent setting permissions for Database Admin
+  if (divisi === "Database Admin") {
+    return res.status(403).json({
+      message: "Database Admin permissions cannot be modified.",
+    });
+  }
 
   if (!divisi || !allowedDocumentTypes) {
     return res.status(400).json({
@@ -28,7 +38,6 @@ export const setPermission = async (req, res) => {
     );
     res.status(201).json(permission);
   } catch (error) {
-    console.error("❌ Permission update error:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };

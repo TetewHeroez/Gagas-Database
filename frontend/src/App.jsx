@@ -7,6 +7,8 @@ import { Loader2 } from "lucide-react";
 import DashboardLayout from "./layouts/DashboardLayout";
 import PublicLayout from "./layouts/PublicLayout";
 import LoginPage from "./pages/LoginPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFoundPage from "./pages/NotFoundPage";
 import DashboardContent from "./pages/DashboardContent";
@@ -21,6 +23,7 @@ import DocumentDetailPage from "./pages/DocumentDetailPage";
 export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -60,6 +63,14 @@ export default function App() {
     navigate("/login");
   };
 
+  const handleForgotPassword = () => {
+    setShowForgotPassword(true);
+  };
+
+  const handleBackToLogin = () => {
+    setShowForgotPassword(false);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen w-full bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
@@ -71,7 +82,17 @@ export default function App() {
   return (
     <Routes>
       <Route element={<PublicLayout />}>
-        <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+        <Route 
+          path="/login" 
+          element={
+            showForgotPassword ? (
+              <ForgotPasswordPage onBackToLogin={handleBackToLogin} />
+            ) : (
+              <LoginPage onLogin={handleLogin} onForgotPassword={handleForgotPassword} />
+            )
+          } 
+        />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
       </Route>
 
       <Route

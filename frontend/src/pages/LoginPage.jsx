@@ -3,7 +3,7 @@ import { FileText } from "lucide-react";
 import PasswordInput from "../components/PasswordInput";
 import api from "../api/api"; // <-- 1. Impor instance api
 
-function LoginPage({ onLogin }) {
+function LoginPage({ onLogin, onForgotPassword }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -66,6 +66,16 @@ function LoginPage({ onLogin }) {
         >
           {loading ? "Memproses..." : "Login"}
         </button>
+        
+        <div className="text-center mt-4">
+          <button
+            type="button"
+            onClick={onForgotPassword}
+            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm underline transition-colors duration-200"
+          >
+            Lupa Password?
+          </button>
+        </div>
       </form>
     </div>
   );

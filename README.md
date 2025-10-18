@@ -484,6 +484,4 @@ If you have any questions or need help with setup, please:
 2. Search existing issues on GitHub
 3. Create a new issue if your problem isn't covered
 
----
 
-**Happy coding!** 🎉

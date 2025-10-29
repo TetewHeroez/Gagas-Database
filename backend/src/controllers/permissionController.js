@@ -4,8 +4,8 @@ import { documentTypesEnum } from "../constants/documentConstants.js";
 export const getPermissions = async (req, res) => {
   try {
     // Filter out Database Admin from permissions list
-    const permissions = await Permission.find({ 
-      divisi: { $ne: "Database Admin" } 
+    const permissions = await Permission.find({
+      divisi: { $ne: "Database Admin" },
     });
     res.json(permissions);
   } catch (error) {

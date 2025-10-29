@@ -17,3 +17,17 @@ yarn-error.log*
 # Abaikan folder cache editor
 .vscode/
 .idea/
+
+# Abaikan file test temporary
+test-*.js
+*-test.js
+
+# Abaikan documentation drafts
+*_IMPLEMENTATION.md
+*_GUIDE.md
+*_STATUS.md
+
+# Abaikan file backup
+*.bak
+*.backup
+*.tmp

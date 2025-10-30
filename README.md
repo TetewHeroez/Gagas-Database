@@ -1,7 +1,11 @@
 # Gagas Database Management System
+
 <!-- PORTFOLIO-START: detailedDescription -->
+
 A comprehensive document management system built with **Node.js**, **Express**, **MongoDB**, and **React**. This system provides secure document storage, user management, and role-based access control with advanced features like forgot password functionality.
+
 <!-- PORTFOLIO-END: detailedDescription -->
+
 ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
 ![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge)
 ![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
@@ -11,7 +15,9 @@ A comprehensive document management system built with **Node.js**, **Express**, 
 ## 🚀 Features
 
 ### Core Features
+
 <!-- PORTFOLIO-START: features -->
+
 - **📄 Document Management**: Upload, view, edit, and delete documents
 - **👥 User Management**: Admin can manage users and their permissions
 - **🔐 Authentication & Authorization**: JWT-based authentication with role-based access
@@ -21,7 +27,9 @@ A comprehensive document management system built with **Node.js**, **Express**, 
 - **📱 Responsive Design**: Works seamlessly on desktop and mobile devices
 
 ### Security Features
+
 <!-- PORTFOLIO-START: features -->
+
 - **🔒 Forgot Password**: Email-based password reset functionality <!-- PORTFOLIO-END: features -->
 - **🛡️ Token-based Authentication**: Secure JWT implementation
 - **👮 Role-based Access Control**: Admin and user roles with different permissions
@@ -30,9 +38,11 @@ A comprehensive document management system built with **Node.js**, **Express**, 
 - **🔑 Database Admin Auto-Access**: Database Admin role has automatic access to all documents
 
 ### Document Features
+
 <!-- PORTFOLIO-START: features -->
+
 - **☁️ Cloud Storage**: Integration with Cloudinary for file storage
-- **📎 Multiple File Types**: Support for various document formats 
+- **📎 Multiple File Types**: Support for various document formats
 - **🏷️ Document Categories**: Organize documents by type and division <!-- PORTFOLIO-END: features -->
 - **📋 Document Permissions**: Control who can view and edit documents
 - **📈 Document Analytics**: Track document views and downloads
@@ -469,19 +479,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👥 Authors
 
 - **TetewHeroez** - _Initial work_ - [TetewHeroez](https://github.com/TetewHeroez)
-
-## 🙏 Acknowledgments
-
-- Thanks to all contributors who helped with this project
-- Inspiration from modern document management systems
-- Built with love using open-source technologies
-
-## 📞 Support
-
-If you have any questions or need help with setup, please:
-
-1. Check the documentation above
-2. Search existing issues on GitHub
-3. Create a new issue if your problem isn't covered
-
-

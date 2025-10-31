@@ -13,6 +13,9 @@ const router = express.Router();
 // Ketika ada request POST ke '/login', jalankan fungsi loginUser dari controller
 router.post("/login", loginUser);
 
+// Debug route (development only)
+router.get("/debug/users", debugUsers);
+
 // Rute untuk forgot password
 router.post("/forgot-password", forgotPassword);
 

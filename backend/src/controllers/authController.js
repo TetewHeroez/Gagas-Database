@@ -147,3 +147,22 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
 };
+
+// Debug endpoint to list users and counts (only enabled in development)
+export const debugUsers = async (req, res) => {
+  // Allow only in development to avoid accidental data exposure in prod
+  if (process.env.NODE_ENV !== "development") {
+    return res.status(403).json({ message: "Debug endpoint disabled" });
+  }
+
+  try {
+    const total = await User.countDocuments();
+    const admins = await User.countDocuments({ tipeAkses: "admin" });
+    const users = await User.find({}, "email namaLengkap tipeAkses status").limit(50);
+
+    res.status(200).json({ total, admins, users });
+  } catch (error) {
+    console.error("Debug users error:", error);
+    res.status(500).json({ message: "Gagal mengambil data pengguna" });
+  }
+};

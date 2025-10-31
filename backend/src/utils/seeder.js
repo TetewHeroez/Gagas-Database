@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import Document from "../models/Document.js";
 import Permission from "../models/Permission.js";
 import { documentTypesEnum } from "../constants/documentConstants.js";
+import bcrypt from "bcryptjs";
 
 const seedData = async () => {
   try {
@@ -33,7 +34,31 @@ const seedData = async () => {
       });
       console.log(`✅ Akun admin awal untuk ${adminEmail} berhasil dibuat.`);
     } else {
+      // Jika sudah ada admin, pastikan password sesuai ENV (memudahkan dev).
       adminUser = await User.findOne({ tipeAkses: "admin" });
+      if (adminUser && process.env.ADMIN_PASSWORD) {
+        try {
+          const matches = await bcrypt.compare(
+            process.env.ADMIN_PASSWORD,
+            adminUser.password
+          );
+          if (!matches) {
+            console.log(
+              "Admin user exists but password doesn't match .env - updating to ADMIN_PASSWORD"
+            );
+            adminUser.password = process.env.ADMIN_PASSWORD;
+            adminUser.resetPasswordToken = undefined;
+            adminUser.resetPasswordExpires = undefined;
+            await adminUser.save();
+            console.log("✅ Admin password synced with .env");
+          }
+        } catch (err) {
+          console.error(
+            "Error while verifying/updating admin password:",
+            err.message
+          );
+        }
+      }
     }
 
     // Seeding Permission untuk Database Admin

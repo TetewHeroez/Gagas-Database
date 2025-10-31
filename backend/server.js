@@ -17,11 +17,23 @@ import dashboardRoutes from "./src/routes/dashboardRoutes.js"; // <-- Impor rute
 
 const app = express();
 const PORT = process.env.PORT || 5001;
+// FRONTEND_URL is usually set in production. For local development we also
+// want to allow the Vite dev server at http://localhost:5173.
 const URL = process.env.FRONTEND_URL || "http://localhost:5173";
+
+// Build allowed origins array. In development include the local Vite origin so
+// preflight requests from the frontend are accepted.
+const allowedOrigins = Array.isArray(URL) ? URL.slice() : [URL];
+if (process.env.NODE_ENV !== "production") {
+  const devOrigin = "http://localhost:5173";
+  if (!allowedOrigins.includes(devOrigin)) allowedOrigins.push(devOrigin);
+}
+
+console.log("Allowed CORS origins:", allowedOrigins);
 
 app.use(
   cors({
-    origin: [URL],
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })

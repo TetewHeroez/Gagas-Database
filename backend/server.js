@@ -55,7 +55,7 @@ const startServer = async () => {
   await connectDB();
   await seedData();
   app.listen(PORT, () =>
-    console.log(`🚀 Server berjalan dengan benar di http://localhost:${PORT}`)
+    console.log(`🚀 Server berjalan dengan benar di ${URL}`)
   );
 };
 

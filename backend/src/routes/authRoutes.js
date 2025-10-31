@@ -4,6 +4,7 @@ import {
   loginUser,
   forgotPassword,
   resetPassword,
+  debugUsers,
 } from "../controllers/authController.js";
 
 // Membuat instance router dari Express

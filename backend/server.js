@@ -18,7 +18,16 @@ import dashboardRoutes from "./src/routes/dashboardRoutes.js"; // <-- Impor rute
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://frontend-project.vercel.app", // ganti dengan domain frontend kamu di Vercel
+      "http://localhost:5173", // biar bisa testing lokal juga
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true, // kalau kamu pakai cookies/token
+  })
+);
 app.use(express.json());
 
 // Add request logging middleware for important requests

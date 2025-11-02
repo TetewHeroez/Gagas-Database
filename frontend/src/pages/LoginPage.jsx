@@ -15,11 +15,27 @@ function LoginPage({ onLogin, onForgotPassword }) {
     setLoading(true);
     try {
       // 2. Gunakan 'api' dan path relatif
-      const response = await api.post("/api/auth/login", { email, password });
-      onLogin(response.data);
+      const response = await api.post(
+        "/api/auth/login",
+        { email, password },
+        {
+          // Suppress Axios warning/error untuk request ini
+          validateStatus: (status) => status < 500, // Treat 4xx as valid response, not error
+        }
+      );
+
+      // Cek manual apakah login berhasil (status 200-299)
+      if (response.status >= 200 && response.status < 300) {
+        onLogin(response.data);
+      } else {
+        // Status 4xx (seperti 401) - ambil pesan error dari response
+        const errorMessage = response.data?.message || "Login gagal.";
+        setError(errorMessage);
+      }
     } catch (err) {
-      // Tidak perlu console.error - user sudah melihat pesan error di UI
-      const errorMessage = err.response?.data?.message || "Login gagal.";
+      // Hanya tangkap error 5xx atau network error
+      const errorMessage =
+        err.response?.data?.message || "Terjadi kesalahan pada server.";
       setError(errorMessage);
     } finally {
       setLoading(false);

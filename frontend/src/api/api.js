@@ -5,7 +5,8 @@ import axios from "axios";
 // VITE_API_BASE_URL explicitly in the environment.
 const defaultDevBase = "http://localhost:5001";
 const baseURL =
-  import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? defaultDevBase : "");
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.DEV ? defaultDevBase : "");
 
 // Membuat instance Axios dengan konfigurasi default
 const api = axios.create({
@@ -39,9 +40,17 @@ api.interceptors.response.use(
       alert("Server tidak merespon. Silakan coba lagi nanti.");
     }
 
+    // Hanya redirect ke login jika 401 DAN user sedang di halaman yang memerlukan auth
+    // Jangan redirect jika sedang di halaman login (untuk menghindari refresh saat password salah)
     if (error.response?.status === 401) {
-      localStorage.removeItem("authToken");
-      window.location.href = "/login";
+      const currentPath = window.location.pathname;
+      const isLoginPage =
+        currentPath === "/login" || currentPath === "/reset-password";
+
+      if (!isLoginPage) {
+        localStorage.removeItem("authToken");
+        window.location.href = "/login";
+      }
     }
 
     return Promise.reject(error);

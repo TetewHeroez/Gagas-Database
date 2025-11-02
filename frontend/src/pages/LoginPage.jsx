@@ -18,7 +18,7 @@ function LoginPage({ onLogin, onForgotPassword }) {
       const response = await api.post("/api/auth/login", { email, password });
       onLogin(response.data);
     } catch (err) {
-      console.error("Login error:", err);
+      // Tidak perlu console.error - user sudah melihat pesan error di UI
       const errorMessage = err.response?.data?.message || "Login gagal.";
       setError(errorMessage);
     } finally {

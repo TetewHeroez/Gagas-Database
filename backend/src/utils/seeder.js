@@ -12,14 +12,14 @@ const seedData = async () => {
 
     if (userCount === 0) {
       console.log(
-        "Database pengguna kosong. Membuat akun admin awal dari .env..."
+        "Database pengguna kosong. Membuat akun admin awal dari .env...",
       );
 
       // Ambil data admin dari environment variables
       const adminEmail = process.env.ADMIN_EMAIL;
       if (!adminEmail) {
         console.error(
-          "❌ Variabel ADMIN_EMAIL tidak diatur di .env. Seeder dihentikan."
+          "❌ Variabel ADMIN_EMAIL tidak diatur di .env. Seeder dihentikan.",
         );
         return;
       }
@@ -40,11 +40,11 @@ const seedData = async () => {
         try {
           const matches = await bcrypt.compare(
             process.env.ADMIN_PASSWORD,
-            adminUser.password
+            adminUser.password,
           );
           if (!matches) {
             console.log(
-              "Admin user exists but password doesn't match .env - updating to ADMIN_PASSWORD"
+              "Admin user exists but password doesn't match .env - updating to ADMIN_PASSWORD",
             );
             adminUser.password = process.env.ADMIN_PASSWORD;
             adminUser.resetPasswordToken = undefined;
@@ -55,7 +55,7 @@ const seedData = async () => {
         } catch (err) {
           console.error(
             "Error while verifying/updating admin password:",
-            err.message
+            err.message,
           );
         }
       }
@@ -71,7 +71,7 @@ const seedData = async () => {
         allowedDocumentTypes: documentTypesEnum, // Semua jenis dokumen
       });
       console.log(
-        "✅ Permission untuk Database Admin berhasil dibuat dengan akses ke semua dokumen."
+        "✅ Permission untuk Database Admin berhasil dibuat dengan akses ke semua dokumen.",
       );
     }
 
@@ -81,12 +81,12 @@ const seedData = async () => {
       console.log("Database dokumen kosong. Membuat dokumen sampel...");
       const sampleDocuments = [
         {
-          judul: "Rencana Anggaran Biaya Proyek Gedung Baru",
-          jenisDokumen: "RAB",
-          nomorSurat: "RAB/001/VII/2025",
+          judul: "Kontrak Kerja Sama Proyek Gedung Baru",
+          jenisDokumen: "Kontrak",
+          nomorSurat: "KTR/001/VII/2025",
           tanggalDokumen: new Date(),
           namaPT: "PT Maju Jaya",
-          isi: "Detail anggaran untuk pembangunan gedung baru di Surabaya.",
+          perihal: "Detail kontrak untuk pembangunan gedung baru di Surabaya.",
           createdBy: adminUser._id,
         },
         {
@@ -95,7 +95,7 @@ const seedData = async () => {
           nomorSurat: "BAST/012/VII/2025",
           tanggalDokumen: new Date(),
           namaPT: "PT Maju Jaya",
-          isi: "Serah terima 10 unit laptop Dell kepada departemen IT.",
+          perihal: "Serah terima 10 unit laptop Dell kepada departemen IT.",
           createdBy: adminUser._id,
         },
       ];
